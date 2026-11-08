@@ -8,8 +8,9 @@ const BROWSER = process.env.BROWSER_PATH || 'C:/Program Files (x86)/Microsoft/Ed
 const EXT = path.resolve('extension');
 const PORT = 9344;
 const profile = fs.mkdtempSync(path.join(os.tmpdir(), 'ann-prof-'));
-const ICON = fs.readFileSync(path.join(EXT, 'icons/128.png'));
-const ICON_DATA_URL = `data:image/png;base64,${ICON.toString('base64')}`;
+// any real PNG works as the "screenshot" fixture for the editor
+const SAMPLE = fs.readFileSync(path.resolve('docs/preview.png'));
+const SAMPLE_DATA_URL = `data:image/png;base64,${SAMPLE.toString('base64')}`;
 
 const child = spawn(BROWSER, [
   '--headless=new', '--disable-gpu', '--no-first-run', '--no-default-browser-check',
@@ -82,7 +83,7 @@ try {
   check('tray labels the capture', /Demo capture/.test(tray?.label ?? ''), tray?.label);
 
   /* ---------------- 2. annotation editor ---------------- */
-  await swEval(`chrome.storage.local.set({ 'annotate.pending': { dataUrl: ${JSON.stringify(ICON_DATA_URL)}, label: 'Test capture' } }).then(() => 'ok')`);
+  await swEval(`chrome.storage.local.set({ 'annotate.pending': { dataUrl: ${JSON.stringify(SAMPLE_DATA_URL)}, label: 'Test capture' } }).then(() => 'ok')`);
 
   const ann = await cdp.send('Target.createTarget', { url: `chrome-extension://${extId}/annotate.html` });
   const annS = await cdp.send('Target.attachToTarget', { targetId: ann.targetId, flatten: true });

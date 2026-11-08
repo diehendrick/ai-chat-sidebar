@@ -64,5 +64,9 @@ for (const required of ['manifest.json', 'background.js', 'sidepanel.html']) {
   if (!fs.existsSync(path.join(dir, required))) problems.push(`missing ${required}`);
 }
 
-console.log(problems.length ? '\nPROBLEMS:\n - ' + problems.join('\n - ') : '\nAll manifest icon references are valid.');
+if (!refs.size) {
+  console.log('  note: manifest declares no icon files (1.6.1+ paints the toolbar icon at runtime)');
+}
+
+console.log(problems.length ? '\nPROBLEMS:\n - ' + problems.join('\n - ') : '\nExtension is valid: manifest parses and every referenced asset resolves.');
 process.exit(problems.length ? 1 : 0);

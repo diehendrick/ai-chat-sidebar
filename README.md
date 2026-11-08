@@ -42,7 +42,7 @@ itself.
 
 ### Option A — packaged build (recommended)
 
-1. Download **`ai-chat-sidebar-1.6.0.zip`** from
+1. Download **`ai-chat-sidebar-1.6.1.zip`** from
    [Releases](https://github.com/diehendrick/ai-chat-sidebar/releases/latest) and extract it.
 2. Open `edge://extensions` (Edge) or `chrome://extensions` (Chrome).
 3. Enable **Developer mode**.
@@ -55,7 +55,12 @@ itself.
 2. `edge://extensions` → **Developer mode** → **Load unpacked** → select the **`extension/`** folder.
 3. Click the toolbar icon to open the side panel.
 
-Requirements: Chrome/Edge 116+ (Manifest V3 `sidePanel`).
+Requirements: any Chromium 114+ build with Manifest V3.
+
+**Compatibility (v1.6.1+):** the manifest references **no icon files** — the toolbar icon is painted
+at runtime — so a browser that cannot read/decoded an icon file can no longer abort the install with
+`Could not load icon …`. On Chromium forks without the `sidePanel` API the toolbar button opens the
+panel in a narrow window instead.
 
 ## Usage
 
@@ -134,8 +139,8 @@ Chromium fork — a research artefact, not this project.
 ## Project layout
 
 ```
-extension/   load-unpacked extension (manifest, panel UI, compare view, icons)
-tools/       CDP test harnesses, asset generators, extension validator
+extension/   load-unpacked extension (manifest, panel UI, compare view, annotation editor)
+tools/       CDP test harnesses, extension validator, screenshot generators
 docs/        screenshots used by this README
 ```
 

@@ -78,6 +78,84 @@ async function applyFrameRules() {
   console.log('[chat-panel] frame rules synced:', rules.length);
 }
 
+/* ----------------------------------------------------------- compatibility */
+
+// No icon files are referenced from the manifest on purpose: a browser that
+// cannot decode one abort()s the whole extension ("Could not load icon …").
+// The toolbar icon is painted at runtime instead, so a missing/corrupt asset can
+// never block installation. If anything here fails the extension still works.
+function paintIcon(size) {
+  const canvas = new OffscreenCanvas(size, size);
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return null;
+
+  ctx.fillStyle = '#6b7cff';
+  if (typeof ctx.roundRect === 'function') {
+    const r = Math.round(size * 0.26);
+    ctx.beginPath();
+    ctx.roundRect(0, 0, size, size, r);
+    ctx.fill();
+  } else {
+    ctx.fillRect(0, 0, size, size);
+  }
+
+  // white chat bubble with three dots
+  const w = size * 0.54;
+  const h = size * 0.36;
+  const x = (size - w) / 2;
+  const y = (size - h) / 2 - size * 0.02;
+  ctx.fillStyle = '#ffffff';
+  ctx.beginPath();
+  if (typeof ctx.roundRect === 'function') ctx.roundRect(x, y, w, h, size * 0.09);
+  else ctx.rect(x, y, w, h);
+  ctx.fill();
+
+  ctx.fillStyle = '#6b7cff';
+  const r = Math.max(1, size * 0.045);
+  for (const f of [0.5, 1, 1.5]) {
+    ctx.beginPath();
+    ctx.arc(x + (w * f) / 2, y + h / 2, r, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  return ctx.getImageData(0, 0, size, size);
+}
+
+async function applyToolbarIcon() {
+  try {
+    if (!chrome.action?.setIcon) return;
+    const imageData = {};
+    for (const size of [16, 32, 48]) {
+      const d = paintIcon(size);
+      if (d) imageData[size] = d;
+    }
+    if (Object.keys(imageData).length) await chrome.action.setIcon({ imageData });
+  } catch {
+    // cosmetic only — never let this break startup
+  }
+}
+
+const hasSidePanel = Boolean(chrome.sidePanel?.setPanelBehavior);
+
+function wireActionClick() {
+  if (hasSidePanel) {
+    chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: true }).catch(() => {});
+    return;
+  }
+  // Chromium forks without the sidePanel API: open the panel as a narrow window.
+  chrome.action.onClicked?.addListener(async () => {
+    try {
+      await chrome.windows.create({
+        url: chrome.runtime.getURL('sidepanel.html'),
+        type: 'popup',
+        width: 460,
+        height: 900
+      });
+    } catch {
+      chrome.tabs.create({ url: chrome.runtime.getURL('sidepanel.html') }).catch(() => {});
+    }
+  });
+}
+
 chrome.runtime.onInstalled.addListener(async (details) => {
   const stored = await chrome.storage.local.get(['providers', 'selectedIndex']);
   const patch = {};
@@ -86,7 +164,8 @@ chrome.runtime.onInstalled.addListener(async (details) => {
   if (Object.keys(patch).length) await chrome.storage.local.set(patch);
 
   await syncFrameRules();
-  chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: true }).catch(() => {});
+  wireActionClick();
+  await applyToolbarIcon();
 
   // Surface the built-in provider list once, right after install, so the panel
   // is usable without the user having to discover the gear icon.
@@ -97,7 +176,8 @@ chrome.runtime.onInstalled.addListener(async (details) => {
 
 chrome.runtime.onStartup.addListener(() => {
   syncFrameRules();
-  chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: true }).catch(() => {});
+  wireActionClick();
+  applyToolbarIcon();
 });
 
 // Any settings change must be reflected in the header rules.
