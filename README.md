@@ -106,11 +106,35 @@ node tools/screenshot-v16.mjs  # writes docs/result-tray.png and docs/annotate-e
 `test-scopes.mjs` and `visual-fullpage.mjs` start a local HTTP server with a controlled test page.
 Set `BROWSER_PATH` to your Edge/Chrome binary if it is not in the default Windows location.
 
+## Troubleshooting
+
+**“Failed to load extension — Could not load icon `icon/16.png` specified in `icons`.”**
+
+That path is **not** from this extension. This project references `icons/…` (**plural**). The
+singular `icon/…` belongs to the BrowserOS “Assistant” bundle that ships inside the BrowserOS
+Chromium fork — a research artefact, not this project.
+
+- Correct folder to load: **`extension/`** (or the release ZIP) — its manifest points at
+  `icons/16.png`, `icons/48.png`, `icons/128.png`.
+- Verify a folder before loading:
+
+  ```bash
+  node tools/validate-extension.mjs extension
+  ```
+
+  It prints `OK` per icon and fails if the manifest references a missing or malformed PNG.
+
+**Other load errors on macOS/Linux**
+
+- Extract the release ZIP with the system archive tool, or simply `git clone` the repo and load
+  `extension/` directly — that avoids any archive quirks.
+- Load the folder that *contains* `manifest.json`, not its parent.
+
 ## Project layout
 
 ```
 extension/   load-unpacked extension (manifest, panel UI, compare view, icons)
-tools/       CDP test harnesses and asset generators
+tools/       CDP test harnesses, asset generators, extension validator
 docs/        screenshots used by this README
 ```
 
