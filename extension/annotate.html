@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Annotate screenshot — AI Chat Sidebar</title>
+    <link rel="stylesheet" href="annotate.css" />
+  </head>
+  <body>
+    <header class="bar">
+      <strong>Annotate screenshot</strong>
+
+      <div class="tools" role="toolbar" aria-label="Annotation tools">
+        <button class="tool" data-tool="pen" type="button" aria-pressed="true" title="Pen">
+          <svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true"><path d="M13.5 3.5l3 3L8 15H5v-3z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+        </button>
+        <button class="tool" data-tool="arrow" type="button" aria-pressed="false" title="Arrow">
+          <svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true"><path d="M4 16L16 4M16 4h-5M16 4v5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <button class="tool" data-tool="rect" type="button" aria-pressed="false" title="Rectangle">
+          <svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true"><rect x="3.5" y="5" width="13" height="10" rx="1.4" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+        </button>
+        <button class="tool" data-tool="ellipse" type="button" aria-pressed="false" title="Ellipse">
+          <svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true"><ellipse cx="10" cy="10" rx="6.5" ry="5" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+        </button>
+        <button class="tool" data-tool="text" type="button" aria-pressed="false" title="Text">
+          <svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true"><path d="M4 5h12M10 5v11" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+
+      <div class="swatches" role="group" aria-label="Colour">
+        <button class="swatch" data-color="#ff3b30" style="--c:#ff3b30" type="button" aria-label="Red"></button>
+        <button class="swatch" data-color="#ffcc00" style="--c:#ffcc00" type="button" aria-label="Yellow"></button>
+        <button class="swatch" data-color="#34c759" style="--c:#34c759" type="button" aria-label="Green"></button>
+        <button class="swatch" data-color="#0a84ff" style="--c:#0a84ff" type="button" aria-label="Blue"></button>
+        <button class="swatch is-active" data-color="#6b7cff" style="--c:#6b7cff" type="button" aria-label="Accent"></button>
+        <button class="swatch" data-color="#ffffff" style="--c:#ffffff" type="button" aria-label="White"></button>
+        <button class="swatch" data-color="#111111" style="--c:#111111" type="button" aria-label="Black"></button>
+      </div>
+
+      <label class="width">
+        <span>Size</span>
+        <input id="width" type="range" min="2" max="18" value="5" />
+      </label>
+
+      <div class="actions">
+        <button class="ghost" id="undo" type="button">Undo</button>
+        <button class="ghost" id="clear" type="button">Clear</button>
+        <button class="ghost" id="cancel" type="button">Cancel</button>
+        <button class="primary" id="done" type="button">Send to chat</button>
+      </div>
+    </header>
+
+    <main class="stage" id="stage">
+      <canvas id="canvas" aria-label="Screenshot annotation canvas"></canvas>
+    </main>
+
+    <div class="hint">Draw on the screenshot, then press <strong>Send to chat</strong>.</div>
+
+    <script src="annotate.js" type="module"></script>
+  </body>
+</html>

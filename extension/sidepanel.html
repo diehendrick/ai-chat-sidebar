@@ -122,6 +122,21 @@
       </div>
     </section>
 
+    <!-- Result tray: makes it obvious that a capture happened and offers the
+         next step (send to chat, annotate, download). -->
+    <div class="tray" id="tray" hidden>
+      <img class="tray-thumb" id="tray-thumb" alt="Screenshot preview" />
+      <div class="tray-body">
+        <span class="tray-label" id="tray-label">Screenshot</span>
+        <div class="tray-actions">
+          <button class="tray-primary" id="tray-insert" type="button">Insert into chat</button>
+          <button class="tray-btn" id="tray-annotate" type="button">Annotate</button>
+          <button class="tray-btn" id="tray-download" type="button">Download</button>
+          <button class="tray-close" id="tray-discard" type="button" aria-label="Discard screenshot">&times;</button>
+        </div>
+      </div>
+    </div>
+
     <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
 
     <script src="sidepanel.js" type="module"></script>

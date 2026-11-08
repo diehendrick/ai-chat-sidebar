@@ -389,6 +389,95 @@ body {
 
 .menu li.menu-sep:hover { background: rgba(127, 127, 127, 0.22); }
 
+/* ---------- result tray ---------- */
+.tray {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  background: #1b1e23;
+  border-top: 1px solid #333840;
+  flex: 0 0 auto;
+  min-width: 0;
+}
+
+.tray-thumb {
+  width: 52px;
+  height: 52px;
+  flex: 0 0 auto;
+  object-fit: cover;
+  object-position: top center;
+  border-radius: 8px;
+  border: 1px solid #3a4048;
+  background: #0f1115;
+}
+
+.tray-body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.tray-label {
+  font-size: 11.5px;
+  color: #c9ced6;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tray-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.tray-primary {
+  padding: 6px 12px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--accent);
+  color: #fff;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.tray-primary:hover { filter: brightness(1.08); }
+.tray-primary[data-done="true"] { background: #2f7d52; }
+.tray-primary:focus-visible { outline: 2px solid #fff; outline-offset: 1px; }
+
+.tray-btn {
+  padding: 5px 10px;
+  border: 1px solid #3a4048;
+  border-radius: 8px;
+  background: transparent;
+  color: #dfe3e8;
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.tray-btn:hover { background: #2a2f36; }
+
+.tray-close {
+  margin-inline-start: auto;
+  border: 0;
+  background: transparent;
+  color: #8b929c;
+  font-size: 17px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 6px;
+}
+
+.tray-close:hover { background: #2a2f36; color: #fff; }
+
 /* ---------- narrow side panels ---------- */
 @media (max-width: 352px) {
   .bar { padding-inline: 8px; gap: 6px; }

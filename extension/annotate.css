@@ -1,0 +1,126 @@
+:root {
+  --bar: #23262b;
+  --bar-fg: #e8eaed;
+  --line: #3a3f47;
+  --bg: #14161a;
+  --accent: #6b7cff;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  font: 12.5px/1.4 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--bar-fg);
+}
+
+body { display: flex; flex-direction: column; }
+
+/* ---------- toolbar ---------- */
+.bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 8px 12px;
+  background: var(--bar);
+  border-bottom: 1px solid var(--line);
+  flex: 0 0 auto;
+}
+
+.bar strong { font-size: 13px; }
+
+.tools { display: flex; gap: 2px; }
+
+.tool {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: #b9c0c9;
+  cursor: pointer;
+}
+
+.tool:hover { background: #31363d; color: #fff; }
+.tool[aria-pressed="true"] { background: var(--accent); color: #fff; }
+.tool:focus-visible { outline: 2px solid #fff; outline-offset: 1px; }
+
+.swatches { display: flex; gap: 6px; }
+
+.swatch {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  background: var(--c);
+  cursor: pointer;
+  padding: 0;
+}
+
+.swatch.is-active { border-color: #fff; box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2); }
+
+.width { display: inline-flex; align-items: center; gap: 6px; color: #aab1ba; }
+.width input { width: 92px; accent-color: var(--accent); }
+
+.actions { display: flex; gap: 6px; margin-inline-start: auto; }
+
+.ghost {
+  padding: 6px 11px;
+  border: 1px solid #3a4048;
+  border-radius: 8px;
+  background: transparent;
+  color: #dfe3e8;
+  font: inherit;
+  cursor: pointer;
+}
+
+.ghost:hover { background: #2a2f36; }
+
+.primary {
+  padding: 6px 14px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--accent);
+  color: #fff;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.primary:hover { filter: brightness(1.08); }
+
+/* ---------- canvas ---------- */
+.stage {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 14px;
+}
+
+#canvas {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  cursor: crosshair;
+  border-radius: 6px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+  background: #fff;
+}
+
+.hint {
+  flex: 0 0 auto;
+  padding: 7px 12px;
+  border-top: 1px solid var(--line);
+  color: #8b929c;
+  font-size: 11.5px;
+}

@@ -36,7 +36,14 @@ const els = {
   resetProviders: $('reset-providers'),
   copyBtn: $('btn-copy'),
   shotBtn: $('btn-shot'),
-  resetBtn: $('btn-reset')
+  resetBtn: $('btn-reset'),
+  tray: $('tray'),
+  trayThumb: $('tray-thumb'),
+  trayLabel: $('tray-label'),
+  trayInsert: $('tray-insert'),
+  trayAnnotate: $('tray-annotate'),
+  trayDownload: $('tray-download'),
+  trayDiscard: $('tray-discard')
 };
 
 let providers = DEFAULT_PROVIDERS.slice();
@@ -45,6 +52,7 @@ let loadTimer = null;
 let toastTimer = null;
 let saveTimer = null;
 let busy = false;
+let lastShot = null; // { blob, dataUrl, label }
 
 /* ------------------------------------------------------------------ state */
 
@@ -160,16 +168,74 @@ async function stackTiles(tiles) {
   return new Promise((r) => canvas.toBlob(r, 'image/png'));
 }
 
-// Selected areas land in the chat: copy the image, then focus the chat frame so
-// a single Ctrl+V drops it into the provider's input.
-async function copyImageToChat(blob, count) {
+/* ------------------------------------------------------------ result tray */
+
+function resetTrayInsert() {
+  if (!els.trayInsert) return;
+  els.trayInsert.dataset.done = 'false';
+  els.trayInsert.textContent = 'Insert into chat';
+}
+
+function showTray(blob, label) {
+  if (lastShot?.url) URL.revokeObjectURL(lastShot.url);
+  const url = URL.createObjectURL(blob);
+  lastShot = { blob, url, label };
+  els.trayThumb.src = url;
+  els.trayLabel.textContent = label;
+  els.tray.hidden = false;
+  resetTrayInsert();
+}
+
+function hideTray() {
+  if (lastShot?.url) URL.revokeObjectURL(lastShot.url);
+  lastShot = null;
+  els.tray.hidden = true;
+}
+
+// The provider chat lives in a cross-origin iframe, so the extension cannot type
+// into it. Copying + focusing the frame makes a single Ctrl+V enough.
+async function insertShotIntoChat() {
+  if (!lastShot) return;
+  const blob = lastShot.blob ?? await toBlob(lastShot.dataUrl);
   try {
     await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
-    document.getElementById('frame')?.focus();
-    toast(`${count} area${count > 1 ? 's' : ''} copied — press Ctrl+V in the chat`, false);
+    els.frame.focus();
+    els.trayInsert.dataset.done = 'true';
+    els.trayInsert.textContent = 'Copied — press Ctrl+V';
+    toast('Image ready — press Ctrl+V in the chat');
   } catch {
-    await deliverImage(blob, `${count} area${count > 1 ? 's' : ''}`);
+    toast('Clipboard refused the image — use Download', true);
   }
+}
+
+async function annotateShot() {
+  if (!lastShot) return;
+  const dataUrl = await blobToDataUrl(lastShot.blob ?? await toBlob(lastShot.dataUrl));
+  await chrome.storage.local.set({ 'annotate.pending': { dataUrl, label: lastShot.label } });
+  const win = await chrome.windows.create({
+    url: chrome.runtime.getURL('annotate.html'),
+    type: 'popup',
+    width: 1100,
+    height: 780
+  });
+  if (win?.id) toast('Annotate the screenshot, then press “Send to chat”');
+}
+
+function downloadShot() {
+  if (!lastShot) return;
+  const a = document.createElement('a');
+  a.href = lastShot.url;
+  a.download = `ai-chat-sidebar-${Date.now()}.png`;
+  a.click();
+}
+
+function blobToDataUrl(blob) {
+  return new Promise((resolve, reject) => {
+    const r = new FileReader();
+    r.onload = () => resolve(String(r.result));
+    r.onerror = () => reject(new Error('could not read image'));
+    r.readAsDataURL(blob);
+  });
 }
 
 /* ---------------------------------------------------- page text extraction */
@@ -558,17 +624,22 @@ async function screenshotPage(mode = 'visible') {
   busy = true;
   try {
     const tab = await resolveTargetTab();
+    const pageLabel = tab.title || tab.url;
 
     if (mode === 'visible') {
       toast('Capturing visible area…');
-      await deliverImage(await captureVisible(tab), `Visible area of "${tab.title || tab.url}"`);
+      const b64 = await captureVisible(tab);
+      const blob = await toBlob(b64);
+      showTray(blob, `Visible area — ${pageLabel}`);
+      await insertShotIntoChat();
       return;
     }
 
     if (mode === 'full') {
       toast('Capturing full page… the page will scroll');
       const blob = await captureFullPage(tab);
-      await deliverImage(blob, `Full page "${tab.title || tab.url}"`);
+      showTray(blob, `Full page — ${pageLabel}`);
+      await insertShotIntoChat();
       return;
     }
 
@@ -590,7 +661,10 @@ async function screenshotPage(mode = 'visible') {
       const blob = tiles.length === 1
         ? await (await fetch(`data:image/png;base64,${tiles[0].base64}`)).blob()
         : await stackTiles(tiles);
-      await copyImageToChat(blob, rects.length);
+      const areaLabel = `${rects.length} selected area${rects.length > 1 ? 's' : ''} — ${pageLabel}`;
+      showTray(blob, areaLabel);
+      await insertShotIntoChat();
+      toast(`${areaLabel}: ready — press “Insert into chat” again after editing, or annotate it`, false);
       return;
     }
   } catch (err) {
@@ -831,6 +905,23 @@ els.settingsClose.addEventListener('click', hideSettings);
 els.noteAction.addEventListener('click', openPopup);
 els.noteClose.addEventListener('click', hideNote);
 
+// result tray
+els.trayInsert.addEventListener('click', insertShotIntoChat);
+els.trayAnnotate.addEventListener('click', annotateShot);
+els.trayDownload.addEventListener('click', downloadShot);
+els.trayDiscard.addEventListener('click', hideTray);
+
+// the annotation editor sends the edited image back here
+chrome.runtime.onMessage.addListener((msg) => {
+  if (msg?.type !== 'annotation:done' || !msg.dataUrl) return;
+  (async () => {
+    const blob = await (await fetch(msg.dataUrl)).blob();
+    showTray(blob, (msg.label ? msg.label : 'Annotated screenshot') + ' (annotated)');
+    await insertShotIntoChat();
+    toast('Annotation ready — press Ctrl+V in the chat');
+  })();
+});
+
 els.addProvider.addEventListener('click', () => {
   providers.push({ name: 'New provider', url: 'https://example.com/' });
   renderProviderRows();
@@ -864,7 +955,20 @@ chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
     try {
       const record = (extra) => chrome.storage.local.set({ selftest: { action: msg.action, ok: true, ...extra } });
 
-      if (msg.action === 'copyContent' || msg.action === 'copyWhole') {
+      if (msg.action === 'trayDemo') {
+        const c = document.createElement('canvas');
+        c.width = 160;
+        c.height = 90;
+        const g = c.getContext('2d');
+        g.fillStyle = '#6b7cff';
+        g.fillRect(0, 0, c.width, c.height);
+        g.fillStyle = '#fff';
+        g.font = '600 18px system-ui';
+        g.fillText('DEMO', 18, 52);
+        const blob = await new Promise((r) => c.toBlob(r, 'image/png'));
+        showTray(blob, 'Demo capture — sample page');
+        await record({ trayVisible: !els.tray.hidden, label: els.trayLabel.textContent, insertLabel: els.trayInsert.textContent });
+      } else if (msg.action === 'copyContent' || msg.action === 'copyWhole') {
         const tab = await resolveTargetTab();
         const text = msg.action === 'copyWhole' ? await readWholePageText(tab) : (await readContentOnly(tab)).text;
         const ok = await copyText(text);

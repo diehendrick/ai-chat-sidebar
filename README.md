@@ -19,6 +19,8 @@ workflow with browser-extension APIs.
 | Embedded site in the side panel | Sites that forbid framing have `X-Frame-Options` / `Content-Security-Policy` stripped for sub-frames via `declarativeNetRequest`. |
 | **Copy page → chat** | Click = article content only (drops header/nav/sidebar/footer). `Alt+click` = whole page. |
 | **Screenshot → chat** | Click = visible area. `Alt+click` = full page. Menu also offers *full page* and *selected areas*. |
+| **Result tray** | Every capture opens a tray with a thumbnail and explicit actions: **Insert into chat**, **Annotate**, **Download**, discard. You always see that the capture worked. |
+| **Annotate** | Draw pen strokes, arrows, rectangles, ellipses and text on the capture; **Send to chat** flattens it back into the panel. |
 | Full-page capture | Scroll-and-stitch, so fixed/sticky headers don't repeat (Chromium's `captureBeyondViewport` duplicates them). The page visibly scrolls while capturing. |
 | Multi-area capture | Drag as many rectangles as you want, `Enter` to finish, `Esc` to cancel; areas are stitched into one image. |
 | Reset LLM chat | Reloads the provider panel to a clean conversation. |
@@ -28,11 +30,19 @@ workflow with browser-extension APIs.
 Copy and screenshot always target **the page you are browsing** (the active tab), never the panel
 itself.
 
+### Result tray
+
+![Result tray after a capture](docs/result-tray.png)
+
+### Annotation editor
+
+![Annotation editor with a rectangle and an arrow](docs/annotate-editor.png)
+
 ## Install
 
 ### Option A — packaged build (recommended)
 
-1. Download **`ai-chat-sidebar-1.5.0.zip`** from
+1. Download **`ai-chat-sidebar-1.6.0.zip`** from
    [Releases](https://github.com/diehendrick/ai-chat-sidebar/releases/latest) and extract it.
 2. Open `edge://extensions` (Edge) or `chrome://extensions` (Chrome).
 3. Enable **Developer mode**.
@@ -54,6 +64,9 @@ Requirements: Chrome/Edge 116+ (Manifest V3 `sidePanel`).
 - `Alt+click` on Copy/Screenshot switches the scope (whole page / full page).
 - In the `⋮` menu, *Page actions* holds every variant: copy content only, copy whole page,
   screenshot visible area, screenshot full page, screenshot selected areas.
+- After a capture the **result tray** appears at the bottom: *Insert into chat*, *Annotate*,
+  *Download*, or dismiss. *Annotate* opens an editor window; **Send to chat** there returns the
+  flattened image to the panel and copies it.
 
 ### Why a Ctrl+V is still needed
 
