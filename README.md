@@ -30,11 +30,20 @@ itself.
 
 ## Install
 
-1. Clone this repo (or download the ZIP and extract it).
+### Option A — packaged build (recommended)
+
+1. Download **`ai-chat-sidebar-1.5.0.zip`** from
+   [Releases](https://github.com/diehendrick/ai-chat-sidebar/releases/latest) and extract it.
 2. Open `edge://extensions` (Edge) or `chrome://extensions` (Chrome).
 3. Enable **Developer mode**.
-4. Click **Load unpacked** and select the **`extension/`** folder.
+4. Click **Load unpacked** and select the extracted folder (it contains `manifest.json`).
 5. Click the toolbar icon to open the side panel.
+
+### Option B — from source
+
+1. Clone this repo.
+2. `edge://extensions` → **Developer mode** → **Load unpacked** → select the **`extension/`** folder.
+3. Click the toolbar icon to open the side panel.
 
 Requirements: Chrome/Edge 116+ (Manifest V3 `sidePanel`).
 
