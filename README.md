@@ -83,6 +83,7 @@ straight to the clipboard as well.
 | `tabs` | Picks the active tab as the copy/screenshot target, plus open-in-tab and floating window. |
 | `scripting` | Reads page text and injects the area-selection overlay. |
 | `clipboardWrite` | Puts page text / screenshots on the clipboard. |
+| `unlimitedStorage` | Holds the pending screenshot while the annotation editor window is open. |
 | `declarativeNetRequest` | Removes `X-Frame-Options` and CSP `frame-ancestors` for sub-frames of configured providers. |
 | `<all_urls>` | Works on whatever page or provider you are using. No data leaves your machine. |
 
