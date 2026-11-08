@@ -95,12 +95,13 @@ extensions page.
 Automated checks live in `tools/` and drive a real Chromium over CDP (headless):
 
 ```bash
-node tools/test-scopes.mjs     # copy scopes, screenshot scopes, toolbar/menu structure
-node tools/test-ui.mjs         # settings drawer, default provider, compare view
-node tools/test-annotate.mjs   # result tray + annotation editor round-trip
-node tools/visual-fullpage.mjs # writes docs/fullpage-sample.png for visual inspection
-node tools/screenshot.mjs      # writes docs/preview.png
-node tools/screenshot-v16.mjs  # writes docs/result-tray.png and docs/annotate-editor.png
+node tools/test-scopes.mjs        # copy scopes, screenshot scopes, toolbar/menu structure
+node tools/test-ui.mjs            # settings drawer, default provider, compare view
+node tools/test-annotate.mjs      # result tray + annotation editor round-trip
+node tools/validate-extension.mjs extension   # manifest ↔ files, PNG decode
+node tools/visual-fullpage.mjs    # writes docs/fullpage-sample.png for visual inspection
+node tools/screenshot.mjs         # writes docs/preview.png
+node tools/screenshot-v16.mjs     # writes docs/result-tray.png and docs/annotate-editor.png
 ```
 
 `test-scopes.mjs` and `visual-fullpage.mjs` start a local HTTP server with a controlled test page.
