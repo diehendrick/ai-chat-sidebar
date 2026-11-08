@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Clash of GPTs — Compare providers</title>
+    <style>
+      :root {
+        --bar: #23262b;
+        --bar-fg: #e8eaed;
+        --line: #3a3f47;
+        --bg: #ffffff;
+        --fg: #16181c;
+        --muted: #6b7280;
+        --accent: #6b7cff;
+        color-scheme: light dark;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root { --bg: #0f1115; --fg: #e8eaed; --muted: #8b929c; }
+      }
+      * { box-sizing: border-box; }
+      html, body { height: 100%; margin: 0; }
+      body {
+        display: flex; flex-direction: column;
+        font: 13px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+        background: var(--bg); color: var(--fg);
+      }
+      header {
+        display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+        padding: 9px 12px; background: var(--bar); color: var(--bar-fg);
+        border-bottom: 1px solid var(--line);
+      }
+      header strong { font-size: 13px; }
+      .chips { display: flex; gap: 6px; flex-wrap: wrap; margin-left: auto; }
+      .chip {
+        display: inline-flex; align-items: center; gap: 6px;
+        padding: 4px 10px; border: 1px solid var(--line); border-radius: 999px;
+        background: transparent; color: inherit; font: inherit; font-size: 12px; cursor: pointer;
+      }
+      .chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }
+      main { flex: 1 1 auto; min-height: 0; display: grid; gap: 1px; background: var(--line); }
+      main[data-panes="1"] { grid-template-columns: 1fr; }
+      main[data-panes="2"] { grid-template-columns: 1fr 1fr; }
+      main[data-panes="3"], main[data-panes="4"] { grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; }
+      .pane { display: flex; flex-direction: column; min-width: 0; min-height: 0; background: var(--bg); }
+      .pane-bar {
+        display: flex; align-items: center; gap: 6px; padding: 5px 8px;
+        border-bottom: 1px solid var(--line); font-size: 12px;
+      }
+      .pane-bar span { flex: 1 1 auto; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .pane-bar button {
+        border: 0; background: transparent; color: var(--muted); cursor: pointer;
+        border-radius: 5px; padding: 2px 6px; font: inherit; font-size: 12px;
+      }
+      .pane-bar button:hover { background: rgba(127, 127, 127, 0.16); color: var(--fg); }
+      .pane iframe { flex: 1 1 auto; width: 100%; height: 100%; border: 0; background: var(--bg); }
+      .empty { padding: 28px; color: var(--muted); }
+    </style>
+  </head>
+  <body>
+    <header>
+      <strong>Clash of GPTs</strong>
+      <span style="color: var(--muted); font-size: 12px">send one prompt to several providers</span>
+      <div class="chips" id="chips"></div>
+    </header>
+    <main id="grid" data-panes="0"></main>
+    <script src="compare.js" type="module"></script>
+  </body>
+</html>

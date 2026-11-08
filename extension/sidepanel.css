@@ -1,0 +1,398 @@
+:root {
+  --bar-bg: #23262b;
+  --bar-fg: #e8eaed;
+  --bar-border: #333840;
+  --menu-bg: #1c1f24;
+  --menu-hover: #2b3037;
+  --page-bg: #ffffff;
+  --page-fg: #16181c;
+  --muted: #7c848f;
+  --accent: #6b7cff;
+  --radius: 10px;
+  color-scheme: light dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --page-bg: #0f1115;
+    --page-fg: #e8eaed;
+    --muted: #8b929c;
+  }
+}
+
+* { box-sizing: border-box; }
+
+/* Author styles like `.settings { display:flex }` otherwise beat the UA rule for
+   the [hidden] attribute, which left the settings drawer permanently visible and
+   made the Done button look dead. */
+[hidden] { display: none !important; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  font: 13px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  background: var(--page-bg);
+  color: var(--page-fg);
+}
+
+body {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---------- header ---------- */
+.bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 10px;
+  background: var(--bar-bg);
+  color: var(--bar-fg);
+  border-bottom: 1px solid var(--bar-border);
+  flex: 0 0 auto;
+}
+
+.bar-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.title {
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 0.2px;
+  color: #c9ced6;
+  white-space: nowrap;
+}
+
+.picker { position: relative; }
+
+.picker-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 10px;
+  min-width: 96px;
+  max-width: 132px;
+  justify-content: space-between;
+  background: #171a1f;
+  color: #eef1f5;
+  border: 1px solid #3a4048;
+  border-radius: 8px;
+  font: inherit;
+  font-size: 12.5px;
+  cursor: pointer;
+}
+
+#picker-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.picker-btn:hover { border-color: #4b525c; }
+.picker-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+.picker-menu {
+  position: absolute;
+  z-index: 30;
+  top: calc(100% + 6px);
+  left: 0;
+  min-width: 180px;
+  margin: 0;
+  padding: 4px;
+  list-style: none;
+  background: var(--menu-bg);
+  border: 1px solid #333840;
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+}
+
+.picker-menu li {
+  padding: 7px 10px;
+  border-radius: 7px;
+  font-size: 12.5px;
+  color: #dfe3e8;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.picker-menu li:hover,
+.picker-menu li[aria-selected="true"] { background: var(--menu-hover); }
+
+/* Action cluster: frequent actions first (trailing edge), overflow last.
+   Groups are separated by space only — no divider line in the toolbar. */
+.bar-actions { display: flex; align-items: center; gap: 2px; }
+.bar-actions .menu-wrap { margin-inline-start: 6px; }
+
+.icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: #b9c0c9;
+  cursor: pointer;
+}
+
+.icon:hover { background: #31363d; color: #fff; }
+.icon:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+/* ---------- notice ---------- */
+.note {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  font-size: 12px;
+  background: #3a2f16;
+  color: #f2d79a;
+  border-bottom: 1px solid #4c3d1c;
+  flex: 0 0 auto;
+}
+
+.note-action {
+  margin-left: auto;
+  padding: 3px 9px;
+  border: 1px solid #6b5726;
+  border-radius: 6px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.note-close {
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+/* ---------- embedding stage ---------- */
+.stage {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  background: var(--page-bg);
+}
+
+#frame {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: var(--page-bg);
+}
+
+/* ---------- settings ---------- */
+.settings {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px;
+  background: var(--page-bg);
+  overflow-y: auto;
+}
+
+.settings-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.settings-head h2 { margin: 0; font-size: 14px; }
+
+.hint { margin: 0; color: var(--muted); font-size: 12px; }
+.hint code { font-size: 11px; background: rgba(127, 127, 127, 0.14); padding: 1px 4px; border-radius: 4px; }
+
+.provider-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.provider-row {
+  display: grid;
+  grid-template-columns: auto 1fr 1.6fr auto;
+  gap: 6px;
+  align-items: center;
+}
+
+.provider-row.is-active input:first-of-type { font-weight: 600; }
+
+/* "use this provider" radio */
+.pick {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: 1.5px solid rgba(127, 127, 127, 0.45);
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+}
+
+.pick.is-active { border-color: var(--accent); }
+.pick.is-active::after {
+  content: '';
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+.pick:hover { border-color: var(--accent); }
+
+.provider-row input {
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid rgba(127, 127, 127, 0.3);
+  border-radius: 7px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 12px;
+}
+
+.provider-row input:focus-visible { outline: 2px solid var(--accent); outline-offset: 0; }
+
+.provider-row .remove {
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 6px;
+}
+
+.provider-row .remove:hover { background: rgba(255, 90, 90, 0.14); color: #ff7b7b; }
+
+.settings-actions { display: flex; gap: 8px; }
+
+.ghost {
+  padding: 6px 11px;
+  border: 1px solid rgba(127, 127, 127, 0.35);
+  border-radius: 8px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.ghost:hover { background: rgba(127, 127, 127, 0.12); }
+.ghost.danger:hover { background: rgba(255, 90, 90, 0.14); color: #ff7b7b; }
+
+/* ---------- overflow menu (⋮) — mirrors the native llmchat menu ---------- */
+.menu-wrap { position: relative; }
+
+.menu {
+  position: absolute;
+  z-index: 40;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 236px;
+  margin: 0;
+  padding: 4px;
+  list-style: none;
+  background: var(--menu-bg);
+  border: 1px solid #333840;
+  border-radius: 10px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+}
+
+.menu li {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 8px 10px;
+  border-radius: 7px;
+  color: #dfe3e8;
+  font-size: 12.5px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.menu li:hover,
+.menu li:focus-visible { background: var(--menu-hover); outline: none; }
+.menu li svg { flex: 0 0 auto; color: #b9c0c9; }
+
+/* ---------- toast ---------- */
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 14px;
+  transform: translateX(-50%);
+  max-width: calc(100% - 20px);
+  padding: 8px 12px;
+  border-radius: 9px;
+  background: #23262b;
+  color: #eef1f5;
+  border: 1px solid #3a4048;
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.45);
+  font-size: 12px;
+  z-index: 60;
+}
+
+.toast[data-kind="error"] {
+  border-color: #7a3b3b;
+  background: #2f1e1e;
+  color: #ffd7d7;
+}
+
+/* ---------- menu structure ---------- */
+/* `.menu li` is more specific than a bare class, so both helpers below must
+   repeat the `li` part or the shared padding wins and separators render as bars. */
+.menu li.menu-label {
+  padding: 6px 10px 4px;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  cursor: default;
+}
+
+.menu li.menu-label:hover { background: transparent; }
+
+.menu li.menu-sep {
+  height: 1px;
+  min-height: 1px;
+  margin: 5px 6px;
+  padding: 0;
+  border-radius: 0;
+  background: rgba(127, 127, 127, 0.22);
+  pointer-events: none;
+}
+
+.menu li.menu-sep:hover { background: rgba(127, 127, 127, 0.22); }
+
+/* ---------- narrow side panels ---------- */
+@media (max-width: 352px) {
+  .bar { padding-inline: 8px; gap: 6px; }
+  .title { display: none; }
+  .picker-btn { min-width: 82px; max-width: 106px; }
+  .bar-actions .menu-wrap { margin-inline-start: 4px; }
+}

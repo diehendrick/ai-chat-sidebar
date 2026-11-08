@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Chat Sidebar</title>
+    <link rel="stylesheet" href="sidepanel.css" />
+  </head>
+  <body>
+    <header class="bar">
+      <div class="bar-left">
+        <span class="title">Chat</span>
+        <div class="picker" id="picker">
+          <button id="picker-btn" class="picker-btn" type="button" aria-haspopup="listbox" aria-expanded="false">
+            <span id="picker-label">DeepSeek</span>
+            <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <ul id="picker-menu" class="picker-menu" role="listbox" hidden></ul>
+        </div>
+      </div>
+
+      <div class="bar-actions">
+        <!-- Frequent actions stay visible. Alt+click changes the target. -->
+        <button class="icon" id="btn-copy" type="button" aria-label="Copy page content"
+                title="Copy page content only (Alt+click: whole page)">
+          <svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true"><rect x="7" y="3" width="9" height="11" rx="1.4" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M13 16.5H5.4A1.4 1.4 0 0 1 4 15.1V7" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </button>
+        <button class="icon" id="btn-shot" type="button" aria-label="Screenshot visible area"
+                title="Screenshot visible area (Alt+click: full page)">
+          <svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true"><rect x="3" y="5" width="14" height="10" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="10" cy="10" r="2.2" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+        </button>
+        <button class="icon" id="btn-reset" type="button" aria-label="Reset LLM chat" title="Reset LLM chat">
+          <svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true"><path d="M16 10a6 6 0 1 1-1.8-4.3M16 3v4h-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+
+        <div class="menu-wrap">
+          <button class="icon" id="btn-menu" type="button" aria-haspopup="menu" aria-expanded="false" aria-label="More actions" title="More actions">
+            <svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true"><circle cx="10" cy="4.2" r="1.45" fill="currentColor"/><circle cx="10" cy="10" r="1.45" fill="currentColor"/><circle cx="10" cy="15.8" r="1.45" fill="currentColor"/></svg>
+          </button>
+
+          <ul class="menu" id="menu" role="menu" hidden>
+            <li class="menu-label" role="presentation">Page actions</li>
+            <li role="menuitem" tabindex="0" data-action="copy-content">
+              <svg viewBox="0 0 20 20" width="15" height="15" aria-hidden="true"><rect x="7" y="3" width="9" height="11" rx="1.4" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M13 16.5H5.4A1.4 1.4 0 0 1 4 15.1V7" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+              Copy page content only
+            </li>
+            <li role="menuitem" tabindex="0" data-action="copy-whole">
+              <svg viewBox="0 0 20 20" width="15" height="15" aria-hidden="true"><rect x="7" y="3" width="9" height="11" rx="1.4" fill="none" stroke="currentColor" stroke-width="1.5"/><rect x="4" y="6" width="9" height="11" rx="1.4" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+              Copy whole page
+            </li>
+            <li role="menuitem" tabindex="0" data-action="shot-visible">
+              <svg viewBox="0 0 20 20" width="15" height="15" aria-hidden="true"><rect x="3" y="5" width="14" height="10" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="10" cy="10" r="2.2" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+              Screenshot visible area
+            </li>
+            <li role="menuitem" tabindex="0" data-action="shot-full">
+              <svg viewBox="0 0 20 20" width="15" height="15" aria-hidden="true"><rect x="7" y="2.5" width="6" height="15" rx="1.4" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M4 5.5v9M16 5.5v9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+              Screenshot full page
+            </li>
+            <li role="menuitem" tabindex="0" data-action="shot-region">
+              <svg viewBox="0 0 20 20" width="15" height="15" aria-hidden="true"><path d="M3 7V4.5A1.5 1.5 0 0 1 4.5 3H7M13 3h2.5A1.5 1.5 0 0 1 17 4.5V7M17 13v2.5a1.5 1.5 0 0 1-1.5 1.5H13M7 17H4.5A1.5 1.5 0 0 1 3 15.5V13" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+              Screenshot selected area…
+            </li>
+
+            <li class="menu-sep" role="separator"></li>
+
+            <li role="menuitem" tabindex="0" data-action="reload">
+              <svg viewBox="0 0 20 20" width="15" height="15" aria-hidden="true"><path d="M16 10a6 6 0 1 1-1.8-4.3M16 3v4h-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Reload panel
+            </li>
+            <li role="menuitem" tabindex="0" data-action="open-tab">
+              <svg viewBox="0 0 20 20" width="15" height="15" aria-hidden="true"><path d="M11 4h5v5M16 4l-7 7M9 5H5a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h9a1 1 0 0 0 1-1v-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Open in new tab
+            </li>
+            <li role="menuitem" tabindex="0" data-action="open-popup">
+              <svg viewBox="0 0 20 20" width="15" height="15" aria-hidden="true"><path d="M12 4h4v4M16 4l-6 6M8 5H5a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h9a1 1 0 0 0 1-1v-3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Open in floating window
+            </li>
+            <li role="menuitem" tabindex="0" data-action="compare">
+              <svg viewBox="0 0 20 20" width="15" height="15" aria-hidden="true"><rect x="3" y="3" width="6" height="6" rx="1.3" fill="none" stroke="currentColor" stroke-width="1.5"/><rect x="11" y="3" width="6" height="6" rx="1.3" fill="none" stroke="currentColor" stroke-width="1.5"/><rect x="3" y="11" width="6" height="6" rx="1.3" fill="none" stroke="currentColor" stroke-width="1.5"/><rect x="11" y="11" width="6" height="6" rx="1.3" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+              Compare providers
+            </li>
+
+            <li class="menu-sep" role="separator"></li>
+
+            <li role="menuitem" tabindex="0" data-action="settings">
+              <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+              Providers &amp; settings
+            </li>
+          </ul>
+        </div>
+      </div>
+    </header>
+
+    <div class="note" id="note" hidden>
+      <span id="note-text"></span>
+      <button id="note-action" class="note-action" type="button">Open in window</button>
+      <button id="note-close" class="note-close" type="button" aria-label="Dismiss">&times;</button>
+    </div>
+
+    <main class="stage" id="stage">
+      <iframe
+        id="frame"
+        title="AI provider"
+        referrerpolicy="no-referrer-when-downgrade"
+        allow="microphone; camera; clipboard-read; clipboard-write; fullscreen; autoplay"
+      ></iframe>
+    </main>
+
+    <section class="settings" id="settings" hidden>
+      <div class="settings-head">
+        <h2>Providers</h2>
+        <button id="settings-close" class="ghost" type="button">Done</button>
+      </div>
+      <p class="hint">
+        Any chat site can be added. Sites that forbid embedding get their
+        <code>X-Frame-Options</code> / <code>Content-Security-Policy</code> response headers stripped for sub-frames.
+      </p>
+      <ul id="provider-list" class="provider-list"></ul>
+      <div class="settings-actions">
+        <button id="add-provider" class="ghost" type="button">+ Add provider</button>
+        <button id="reset-providers" class="ghost danger" type="button">Reset defaults</button>
+      </div>
+    </section>
+
+    <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+    <script src="sidepanel.js" type="module"></script>
+  </body>
+</html>

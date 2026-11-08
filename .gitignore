@@ -1,0 +1,19 @@
+# dependencies
+node_modules/
+
+# build output
+dist/
+*.zip
+*.crx
+*.pem
+
+# test artefacts
+work/
+*.log
+chrome-smoke.log
+edge-*.log
+
+# OS
+Thumbs.db
+.DS_Store
+desktop.ini
